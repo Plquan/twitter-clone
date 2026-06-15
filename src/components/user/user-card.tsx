@@ -22,7 +22,12 @@ export function UserCard(user: UserCardProps): JSX.Element {
                    py-3 hover:bg-light-primary/5 dark:hover:bg-dark-primary/5'
       >
         <UserTooltip avatar {...user} modal={modal}>
-          <UserAvatar src={photoURL} alt={name} username={username} />
+          <UserAvatar
+            src={photoURL}
+            alt={name}
+            username={username}
+            disableLink
+          />
         </UserTooltip>
         <div className='flex flex-col gap-1 truncate xs:overflow-visible'>
           <div className='flex items-center justify-between gap-2 truncate xs:overflow-visible'>
@@ -33,11 +38,12 @@ export function UserCard(user: UserCardProps): JSX.Element {
                   name={name}
                   username={username}
                   verified={verified}
+                  disableLink
                 />
               </UserTooltip>
               <div className='flex items-center gap-1 text-light-secondary dark:text-dark-secondary'>
                 <UserTooltip {...user} modal={modal}>
-                  <UserUsername username={username} />
+                  <UserUsername username={username} disableLink />
                 </UserTooltip>
                 {follow && <UserFollowing userTargetId={id} />}
               </div>

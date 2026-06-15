@@ -58,7 +58,9 @@ export function UserTooltip({
     <div
       className={cn(
         'group relative self-start text-light-primary dark:text-dark-primary',
-        avatar ? '[&>div]:translate-y-2' : 'grid [&>div]:translate-y-7'
+        avatar
+          ? '[&>.menu-container]:translate-y-2'
+          : 'grid [&>.menu-container]:translate-y-7'
       )}
     >
       {children}

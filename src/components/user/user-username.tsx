@@ -12,13 +12,25 @@ export function UserUsername({
   className,
   disableLink
 }: UserUsernameProps): JSX.Element {
+  if (disableLink) {
+    return (
+      <span
+        className={cn(
+          'truncate text-light-secondary dark:text-dark-secondary',
+          className
+        )}
+      >
+        @{username}
+      </span>
+    );
+  }
+
   return (
     <Link href={`/user/${username}`}>
       <a
         className={cn(
           'truncate text-light-secondary dark:text-dark-secondary',
-          className,
-          disableLink && 'pointer-events-none'
+          className
         )}
         tabIndex={-1}
       >

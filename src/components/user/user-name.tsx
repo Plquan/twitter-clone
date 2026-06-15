@@ -9,6 +9,7 @@ type UserNameProps = {
   username?: string;
   className?: string;
   iconClassName?: string;
+  disableLink?: boolean;
 };
 
 export function UserName({
@@ -17,30 +18,46 @@ export function UserName({
   verified,
   username,
   className,
-  iconClassName
+  iconClassName,
+  disableLink
 }: UserNameProps): JSX.Element {
   const CustomTag = tag ? tag : 'p';
 
+  const inner = (
+    <>
+      <CustomTag className='truncate'>{name}</CustomTag>
+      {verified && (
+        <i>
+          <HeroIcon
+            className={cn('fill-accent-blue', iconClassName ?? 'h-5 w-5')}
+            iconName='CheckBadgeIcon'
+            solid
+          />
+        </i>
+      )}
+    </>
+  );
+
+  if (disableLink || !username) {
+    return (
+      <div
+        className={cn('flex items-center gap-1 truncate font-bold', className)}
+      >
+        {inner}
+      </div>
+    );
+  }
+
   return (
-    <Link href={username ? `/user/${username}` : '#'}>
+    <Link href={`/user/${username}`}>
       <a
         className={cn(
-          'flex items-center gap-1 truncate font-bold',
-          username ? 'custom-underline' : 'pointer-events-none',
+          'custom-underline flex items-center gap-1 truncate font-bold',
           className
         )}
-        tabIndex={username ? 0 : -1}
+        tabIndex={0}
       >
-        <CustomTag className='truncate'>{name}</CustomTag>
-        {verified && (
-          <i>
-            <HeroIcon
-              className={cn('fill-accent-blue', iconClassName ?? 'h-5 w-5')}
-              iconName='CheckBadgeIcon'
-              solid
-            />
-          </i>
-        )}
+        {inner}
       </a>
     </Link>
   );
