@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@lib/context/auth-context';
 import { useUser } from '@lib/context/user-context';
+import { getOrCreateConversation } from '@lib/firebase/chat-utils';
 import { SEO } from '@components/common/seo';
 import { UserHomeCover } from '@components/user/user-home-cover';
 import { UserHomeAvatar } from '@components/user/user-home-avatar';
@@ -20,10 +22,23 @@ import type { LayoutProps } from './common-layout';
 export function UserHomeLayout({ children }: LayoutProps): JSX.Element {
   const { user, isAdmin } = useAuth();
   const { user: userData, loading } = useUser();
-
   const {
+    push,
     query: { id }
   } = useRouter();
+
+  const [messageLoading, setMessageLoading] = useState(false);
+
+  const handleOpenMessage = async (): Promise<void> => {
+    if (!user?.id || !userData?.id) return;
+    setMessageLoading(true);
+    try {
+      await getOrCreateConversation(user.id, userData.id);
+      void push('/messages');
+    } finally {
+      setMessageLoading(false);
+    }
+  };
 
   const coverData = userData?.coverPhotoURL
     ? { src: userData.coverPhotoURL, alt: userData.name }
@@ -75,12 +90,18 @@ export function UserHomeLayout({ children }: LayoutProps): JSX.Element {
                   <div className='flex gap-2 self-start'>
                     <UserShare username={userData.username} />
                     <Button
-                      className='dark-bg-tab group relative cursor-not-allowed border border-light-line-reply p-2
-                                 hover:bg-light-primary/10 active:bg-light-primary/20 dark:border-light-secondary 
-                                 dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
+                      onClick={() => void handleOpenMessage()}
+                      disabled={messageLoading}
+                      className='dark-bg-tab group relative border border-light-line-reply p-2
+                                 hover:bg-light-primary/10 active:bg-light-primary/20 disabled:cursor-not-allowed 
+                                 disabled:opacity-70 dark:border-light-secondary dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20'
                     >
-                      <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon' />
-                      <ToolTip tip='Message' />
+                      {messageLoading ? (
+                        <span className='h-5 w-5 animate-spin rounded-full border-2 border-main-accent border-t-transparent' />
+                      ) : (
+                        <HeroIcon className='h-5 w-5' iconName='EnvelopeIcon' />
+                      )}
+                      {!messageLoading && <ToolTip tip='Message' />}
                     </Button>
                     <FollowButton
                       userTargetId={userData.id}
